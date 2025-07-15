@@ -1,103 +1,114 @@
-import Image from "next/image";
+"use client"
+
+import type React from "react"
+
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import { useState, useRef, useCallback } from "react"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Card } from "@/components/ui/card"
+import { Map } from "react-kakao-maps-sdk"
+import SomthingCard from "@/components/somthingCard";
+
+interface DummyProduct {
+    id: number
+    title: string
+    price: string
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    const [points, setPoints] = useState(0.9)
+    const [isAtTop, setIsAtTop] = useState(true)
+    const scrollAreaRef = useRef<HTMLDivElement>(null)
+    const numbers = [1, 2, 3, 4, 5, 6, 7]
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+        const target = event.target as HTMLDivElement
+        const scrollTop = target.scrollTop
+        setIsAtTop(scrollTop < 10)
+    }, [])
+
+    const handleDrawerTouchStart = useCallback(
+        (event: React.TouchEvent) => {
+            // 스크롤 영역 내부에서 발생한 터치인지 확인
+            if (scrollAreaRef.current?.contains(event.target as Node)) {
+                event.stopPropagation()
+                return
+            }
+
+            // 스크롤이 맨 위에 있지 않으면 drawer 드래그 차단
+            if (!isAtTop) {
+                event.stopPropagation()
+            }
+        },
+        [isAtTop]
+    )
+
+    const handleDrawerTouchMove = useCallback(
+        (event: React.TouchEvent) => {
+            // 스크롤 영역 내부에서 발생한 터치인지 확인
+            if (scrollAreaRef.current?.contains(event.target as Node)) {
+                event.stopPropagation()
+                return
+            }
+
+            // 스크롤이 맨 위에 있지 않으면 drawer 드래그 차단
+            if (!isAtTop) {
+                event.stopPropagation()
+            }
+        },
+        [isAtTop]
+    )
+
+    return (
+        <main className="relativ h-dvh w-dvw max-w-[650px] overflow-hidden overscroll-contain">
+            <div className="h-full w-full relative">
+                <div className="h-6 w-6 rounded-[12px] bg-amber-300 absolute z-11 right-[18px] bottom-[300px]">매콤</div>
+                <Map className="absolute inset-0 w-full h-full z-10" center={{ lat: 33.5563, lng: 126.79581 }}></Map>
+            </div>
+            <Drawer
+                defaultOpen={true}
+                snapPoints={[0.4, 0.9]}
+                activeSnapPoint={points}
+                setActiveSnapPoint={setPoints}
+                dismissible={false}
+                modal={false}>
+                {points === 0.9 ? (
+                    <div
+                        className="animate-in fade-in-0 fixed inset-0 z-30 overflow-hidden overscroll-contain"
+                        onClick={() => {
+                            setPoints(0.4)
+                        }}
+                    />
+                ) : null}
+                <DrawerContent
+                    className="border-none"
+                    onTouchStart={handleDrawerTouchStart}
+                    onTouchMove={handleDrawerTouchMove}
+                >
+                    <DrawerHeader>
+                        <DrawerTitle>사고링크 행복 병원</DrawerTitle>
+                        <DrawerDescription className="m-0"></DrawerDescription>
+                    </DrawerHeader>
+                   <SomthingCard handleScroll={handleScroll} scrollAreaRef={scrollAreaRef} isAtTop={isAtTop}/>
+                </DrawerContent>
+            </Drawer>
+            <div className="fixed bottom-0 z-80 w-full pointer-events-auto">
+                <ScrollArea className="w-full max-w-[650px] h-[80px] bg-gradient-to-b from-white/0 to-white to-[50%]">
+                    <div className="flex space-x-[4px] pr-[16px]">
+                        {numbers.map((number) => (
+                            <Card
+                                className="w-[100px] h-[80px] bg-indigo-100 rounded-[23px]"
+                                onClick={() => {
+                                    console.log("sdfasdf")
+                                }}
+                                key={number}>
+                                {number}
+                            </Card>
+                        ))}
+                    </div>
+                    <ScrollBar hidden={true} orientation="horizontal" />
+                </ScrollArea>
+            </div>
+        </main>
+    )
 }

@@ -24,11 +24,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none overflow-hidden`}
+    >
+    <script
+        type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3cb01505ccc99b4d98b8965107a91802&libraries=services,clusterer"
+    ></script>
+    <div
+        className="h-screen w-screen flex flex-col items-center justify-items-center bg-gradient-to-b from-slate-400/0 to-slate-400 to-[90%]">
+      <main className="h-full w-full max-w-[650px] min-w-[360px] flex flex-col items-center bg-slate-200 overscroll-none overflow-hidden">
         {children}
-      </body>
+      </main>
+    </div>
+    </body>
     </html>
   );
 }
